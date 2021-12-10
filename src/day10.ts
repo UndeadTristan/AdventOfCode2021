@@ -5,12 +5,11 @@ console.log("Day 10");
 const data = readFileSync("./data/day10.dat", 'utf-8');
 const lines = data.split(/[\r\n]+/);
 
-const openSymbols = new Array('(', '[', '{', '<');
-const closeSymbols = new Array(')', ']', '}', '>');
+const openSymbols = ['(', '[', '{', '<'];
+const closeSymbols = [')', ']', '}', '>'];
 const errorScores = [3, 57, 1197, 25137];
-
+const incompleteScores = [];
 let errorScore = 0;
-let incompleteScores = [];
 
 lines.forEach(line => {
     const symbols = line.split('');
@@ -20,7 +19,7 @@ lines.forEach(line => {
     for (let i = 0; i < symbols.length; ++i)
     {
         const symbol = symbols[i];
-        let symbolIndex;
+        let symbolIndex: number;
         if ((symbolIndex = openSymbols.indexOf(symbol)) > -1)
         {
             openIndexes.unshift(symbolIndex);
@@ -30,6 +29,7 @@ lines.forEach(line => {
             const openIndex = openIndexes.shift();
             if (symbolIndex != openIndex)
             {
+                // To calculate the syntax error score for a line, take the first illegal character on the line and use the error lookup table.
                 errorScore += errorScores[symbolIndex];
                 syntaxError = true;
                 break;
@@ -37,15 +37,11 @@ lines.forEach(line => {
         }
     }
 
-    if (!syntaxError)
+    // if line is valid but incomplete
+    if (!syntaxError && openIndexes.length)
     {
-        let incompleteScore = 0;
-        for (let i=0; i < openIndexes.length; ++i)
-        {
-            incompleteScore *= 5;
-            incompleteScore += openIndexes[i] + 1;
-        }
-        incompleteScores.push(incompleteScore);
+        // for each character, multiply the total score by 5 and then increase the total score by the point value given
+        incompleteScores.push(openIndexes.reduce((p, c) => p * 5 + c + 1, 0));
     }
 });
 
