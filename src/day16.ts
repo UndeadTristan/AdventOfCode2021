@@ -5,6 +5,7 @@ class PacketReader {
     binaryData: string;
     bitsRead: number = 0;
     versionTotal: number = 0;
+    tabs: number = 0;
 
     constructor(packetData: string) {
         this.binaryData = packetData.split('').map(h => parseInt(h, 16).toString(2).padStart(4, '0')).join('');
@@ -17,20 +18,20 @@ class PacketReader {
         return parseInt(bits, 2);
     }
 
-    readLiteral(): number {
-        let literal = 0;
+    readLiteral(): bigint {
+        let literal = BigInt(0);
         let continueBit: number;
 
         do {
             continueBit = this.read(1);
-            literal = (literal << 4) | this.read(4);
+            literal = (literal << BigInt(4)) | BigInt(this.read(4));
         }
         while (continueBit);
 
         return literal;
     }
 
-    readPacket(): number {
+    readPacket(): BigInt {
         const v = this.read(3);
         const t = this.read(3);
 
@@ -40,7 +41,7 @@ class PacketReader {
             return this.readLiteral();
         }
 
-        const values = [];
+        const values: Array<BigInt> = [];
         const i = this.read(1)
         if (i) {
             let l = this.read(11);
@@ -67,23 +68,23 @@ class PacketReader {
 
             // 2 Min
             case 2:
-                return Math.min(...values);
+                return values.reduce((m, e) => e < m ? e : m);
 
             // 3 Max
             case 3:
-                return Math.max(...values);
+                return values.reduce((m, e) => e > m ? e : m);
 
             // 5 Greater Than
             case 5:
-                return values[0] > values[1] ? 1 : 0;
+                return values[0] > values[1] ? BigInt(1) : BigInt(0);
 
             // 6 Less Than
             case 6:
-                return values[0] < values[1] ? 1 : 0;
+                return values[0] < values[1] ? BigInt(1) : BigInt(0);
 
             // 7 Equal To
             case 7:
-                return values[0] === values[1] ? 1 : 0;
+                return values[0] === values[1] ? BigInt(1) : BigInt(0);
         }
     }
 }
