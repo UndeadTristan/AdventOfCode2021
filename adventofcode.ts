@@ -16,4 +16,5 @@ console.log("Advent of Code 2021");
 //import "./src/day14";
 //import "./src/day15";
 //import "./src/day15.part2";
-import "./src/day16";
+//import "./src/day16";
+import "./src/day17";
