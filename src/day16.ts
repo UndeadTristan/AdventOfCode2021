@@ -60,11 +60,11 @@ class PacketReader {
         switch (t) {
             // 0 Sum
             case 0:
-                return values.reduce((p, c) => p + c);
+                //return values.reduce((p, c) => p + c);
 
             // 1 Product
             case 1:
-                return values.reduce((p, c) => p * c);
+                //return values.reduce((p, c) => p * c);
 
             // 2 Min
             case 2:
